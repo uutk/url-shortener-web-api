@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/rs/cors"
 	log "github.com/sirupsen/logrus"
 	"github.com/vladkampov/url-shortener-web-api/domain"
 	"github.com/vladkampov/url-shortener-web-api/router"
@@ -12,5 +13,6 @@ func main() {
 	domain.InitDomainGRPCSession()
 
 	log.Println("Service has started at http://localhost:80")
-	log.Fatal(http.ListenAndServe(":80", router.InitRouter()))
+	handler := cors.Default().Handler(router.InitRouter())
+	log.Fatal(http.ListenAndServe(":80", handler))
 }

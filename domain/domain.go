@@ -29,6 +29,18 @@ func GetUrl(hash string) (string, error) {
 	return r.Url, err
 }
 
+func SendUrl(url string) (string, error) {
+	// Contact the server and print out its response.
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	r, err := c.Shorten(ctx, &pb.URLRequest{Url: url})
+	if err != nil {
+		return "", err
+	}
+	log.Printf("URL was successfully shortened: %s", r.Url)
+	return r.Url, nil
+}
+
 func InitDomainGRPCSession() pb.ShortenerClient {
 	domainServiceUrl := os.Getenv("SHORTENER_DOMAIN_PORT")
 
