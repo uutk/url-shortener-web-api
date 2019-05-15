@@ -29,11 +29,11 @@ func GetUrl(hash string) (string, error) {
 	return r.Url, err
 }
 
-func SendUrl(url string) (string, error) {
+func SendUrl(url string, userId string) (string, error) {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := c.Shorten(ctx, &pb.URLRequest{Url: url})
+	r, err := c.Shorten(ctx, &pb.URLRequest{Url: url, UserId: userId})
 	if err != nil {
 		return "", err
 	}
@@ -42,7 +42,7 @@ func SendUrl(url string) (string, error) {
 }
 
 func InitDomainGRPCSession() pb.ShortenerClient {
-	domainServiceUrl := os.Getenv("SHORTENER_DOMAIN_PORT")
+	domainServiceUrl := os.Getenv("SHORTENER_DOMAIN_URL")
 
 	if len(domainServiceUrl) == 0 {
 		domainServiceUrl = "localhost:50051"

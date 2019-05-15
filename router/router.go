@@ -10,6 +10,7 @@ import (
 
 type UrlObject struct {
 	Url string `json:"url"`
+	UserId string `json:"userId"`
 }
 
 type ErrorResponse struct {
@@ -44,7 +45,7 @@ func handleShortRequest(w http.ResponseWriter, r *http.Request) {
 	var body UrlObject
 	_ = json.NewDecoder(r.Body).Decode(&body)
 
-	url, err := domain.SendUrl(body.Url)
+	url, err := domain.SendUrl(body.Url, body.UserId)
 	if err != nil {
 		log.Warnf("Can't short the url %s: %s", body.Url, err)
 		w.WriteHeader(500)
@@ -55,7 +56,7 @@ func handleShortRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.NewEncoder(w).Encode(UrlObject{url})
+	err = json.NewEncoder(w).Encode(UrlObject{url, body.UserId})
 	if err != nil {
 		log.Warn(err)
 	}
