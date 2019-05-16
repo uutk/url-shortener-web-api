@@ -2,6 +2,7 @@ package router
 
 import (
 	"encoding/json"
+	"flag"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"github.com/vladkampov/url-shortener-web-api/domain"
@@ -65,8 +66,18 @@ func handleShortRequest(w http.ResponseWriter, r *http.Request) {
 func InitRouter() *mux.Router {
 	router := mux.NewRouter()
 
+	router.HandleFunc("/{hash}", redirectToUrl).Methods("GET").Schemes("http")
 	router.HandleFunc("/short-it", handleShortRequest).Methods("POST")
 	router.HandleFunc("/{hash}", redirectToUrl).Methods("GET")
+	router.HandleFunc("/{hash}", redirectToUrl).Methods("GET")
 
+
+	var dir string
+
+	flag.StringVar(&dir, "dir", "./public/.well-known", "the directory to serve files from")
+	flag.Parse()
+
+	// This will serve files under http://localhost:8000/<filename>
+	router.PathPrefix("/.well-known").Handler(http.StripPrefix("/.well-known", http.FileServer(http.Dir(dir))))
 	return router
 }
